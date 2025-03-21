@@ -1,46 +1,14 @@
 #!/usr/bin/env bash
-#Bash script the displays the subdomain and domains connected to your servers respectively 
-# Function to display information for a subdomain
-display_subdomain_info() {
-    local subdomain=$1
-    local record_type=$2
-    local ip_address=$3
-    local destination=$(dig +short $ip_address)
-    echo "The subdomain $subdomain is a $record_type record and points to $destination"
+# Output: The subdomain [SUB_DOMAIN] is a [RECORD_TYPE] record and points to [DESTINATION]
+print_domain_record () {
+    record_and_ip=$(dig "$2"."$1" | grep -A1 'ANSWER SECTION:' | tail -1 | awk '{print $4, $NF}')
+    echo "$2" $record_and_ip | awk '{print "The subdomain " $1 " is a " $2 " record and points to " $3}'
 }
 
-# Check if domain argument is pchmod 600 /etc/letsencrypt/live/www.mulimuoki.tech/fullchain.pem
-if [[ -z $1 ]]; then
-    echo "Domain argument is mandatory"
-    exit 1
-fi
-
-domain=$1
-subdomain=$2
-
-# Display information for default subdomains if subdomain argument is not provided
-if [[ -z $subdomain ]]; then
-    display_subdomain_info "www" "A" "www.$domain"
-    display_subdomain_info "lb-01" "A" "lb-01.$domain"
-    display_subdomain_info "web-01" "A" "web-01.$domain"
-    display_subdomain_info "web-02" "A" "web-02.$domain"
+if [ "$#" == 2 ]; then
+    print_domain_record "$1" "$2"
 else
-    # Display information for specified subdomain
-    case $subdomain in
-        www)
-            display_subdomain_info "www" "A" "www.$domain"
-            ;;
-        lb-01)
-            display_subdomain_info "lb-01" "A" "lb-01.$domain"
-            ;;
-        web-01)
-            display_subdomain_info "web-01" "A" "web-01.$domain"
-            ;;
-        web-02)
-            display_subdomain_info "web-02" "A" "web-02.$domain"
-            ;;
-        *)
-            echo "Invalid subdomain: $subdomain"
-            ;;
-    esac
+    for sub in "www" "lb-01" "web-01" "web-02"; do
+        print_domain_record "$1" "$sub"
+    done
 fi
