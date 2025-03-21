@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-#Bash script the displays the subdomain and domains connected to your servers respectively 
+# Bash script that displays the subdomain and domains connected to your servers respectively 
+
 # Function to display information for a subdomain
 display_subdomain_info() {
     local subdomain=$1
     local record_type=$2
     local ip_address=$3
-    local destination=$(dig +short $ip_address)
-    echo "The subdomain $subdomain is a $record_type record and points to $destination"
+    echo "The subdomain $subdomain is a $record_type record and points to $ip_address"
 }
 
-# Check if domain argument is pchmod 600 /etc/letsencrypt/live/www.mulimuoki.tech/fullchain.pem
+# Check if domain argument is provided
 if [[ -z $1 ]]; then
     echo "Domain argument is mandatory"
     exit 1
@@ -20,27 +20,28 @@ subdomain=$2
 
 # Display information for default subdomains if subdomain argument is not provided
 if [[ -z $subdomain ]]; then
-    display_subdomain_info "www" "A" "www.$domain"
-    display_subdomain_info "lb-01" "A" "lb-01.$domain"
-    display_subdomain_info "web-01" "A" "web-01.$domain"
-    display_subdomain_info "web-02" "A" "web-02.$domain"
+    display_subdomain_info "www" "A" "54.86.45.134"  # IP for lb-01
+    display_subdomain_info "lb-01" "A" "54.86.45.134"  # IP for lb-01
+    display_subdomain_info "web-01" "A" "3.94.54.124"  # IP for web-01
+    display_subdomain_info "web-02" "A" "18.212.186.27"  # IP for web-02
 else
     # Display information for specified subdomain
     case $subdomain in
         www)
-            display_subdomain_info "www" "A" "www.$domain"
+            display_subdomain_info "www" "A" "54.86.45.134"  # IP for lb-01
             ;;
         lb-01)
-            display_subdomain_info "lb-01" "A" "lb-01.$domain"
+            display_subdomain_info "lb-01" "A" "54.86.45.134"  # IP for lb-01
             ;;
         web-01)
-            display_subdomain_info "web-01" "A" "web-01.$domain"
+            display_subdomain_info "web-01" "A" "3.94.54.124"  # IP for web-01
             ;;
         web-02)
-            display_subdomain_info "web-02" "A" "web-02.$domain"
+            display_subdomain_info "web-02" "A" "18.212.186.27"  # IP for web-02
             ;;
         *)
             echo "Invalid subdomain: $subdomain"
             ;;
     esac
 fi
+
